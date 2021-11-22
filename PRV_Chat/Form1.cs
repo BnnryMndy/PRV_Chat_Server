@@ -15,7 +15,7 @@ namespace PRV_Chat
 {
     public partial class Form1 : Form
     {
-        NamedPipeServerStream ss;
+        
         List<string> messages = new List<string>();
         int clientCount = 0;
         public Form1()
@@ -31,15 +31,17 @@ namespace PRV_Chat
 
         public void ClientThread()
         {
-            ss = new NamedPipeServerStream("server", PipeDirection.InOut, 5, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+            NamedPipeServerStream ss = new NamedPipeServerStream("server", PipeDirection.InOut, 5, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
             ss.WaitForConnection();
-            
             ChangeClientCount(1);
+
             Thread thread = new Thread(ClientThread);
             thread.Start();
+
             StreamReader sr = new StreamReader(ss);
             StreamWriter sw = new StreamWriter(ss);
-            int currentThreadMessages = messages.Count;
+
+            int currentThreadMessages = 0; //если поставить 0, то сервер отправит всю историю чата. Если messages.Count, то сервер покажет только сообщения с момента входа
             Task<string> task = ReadLineAsync(sr);
 
             while(true)
